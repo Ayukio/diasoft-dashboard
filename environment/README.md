@@ -1,13 +1,4 @@
-# Environment Setup
 
-## Installation with Anaconda/Miniconda
-
-Run the two commands from the root directory.
-
-```shell
-conda env create -f ./environment/conda.yaml
-conda activate dash-app-tutorial
-```
 
 ## Installation with Pip
 
