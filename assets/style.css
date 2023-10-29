@@ -1,0 +1,7 @@
+hr {
+    border-top: 2px solid gray;
+}
+
+@media(max-width: 800px) {
+    
+}
