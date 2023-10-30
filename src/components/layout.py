@@ -5,7 +5,7 @@ import plotly.graph_objs as go
 import dash_bootstrap_components as dbc
 from bs4 import BeautifulSoup
 import requests
-from src.components.graphs_data import kpi, kpi_col_names, balance_asset_structure, balance_passive_structure, ofr, odds_saldo, odds_rises_col_names, odds_rises_cols
+from src.components.graphs_creator import kpi, kpi_col_names, balance_asset_structure, balance_asset_structure_col_names, balance_asset_structure_last_year, balance_passive_structure, balance_passive_structure_col_names, balance_passive_structure_last_year, ofr, odds_saldo, odds_saldo_col_names, odds_saldo_last_year, odds_rises, odds_rises_col_names, odds_rises_last_year
 
 
 
@@ -76,11 +76,10 @@ def create_layout(app: Dash) -> html.Div:
         if k == 'Капитал': fig_tax = get_kpi_plot(k, v)
 
 # ===========БУХГАЛТЕРСКИЙ БАЛАНС===========
-    balance_asset_structure_titles = ["Внеоборотные активы", "Запасы", "Дебиторская задолженность", "Прочие оборотные активы"]
 
     balance_asset_structure_graph = px.pie(
-        names=balance_asset_structure_titles, 
-        values=balance_asset_structure, 
+        names=balance_asset_structure_col_names[:-1], 
+        values=balance_asset_structure_last_year, 
         hole = 0.4,
         color_discrete_sequence=THEME
         )
@@ -104,12 +103,9 @@ def create_layout(app: Dash) -> html.Div:
     )
     
 
-
-    balance_passive_structure_titles = ["Собственный капитал", "Долгосрочные обязательства", "Краткосрочные обязательства"]
-
     balance_passive_structure_graph =  px.pie(
-        names=balance_passive_structure_titles, 
-        values=balance_passive_structure, 
+        names=balance_passive_structure_col_names[:-1], 
+        values=balance_passive_structure_last_year, 
          hole = 0.4,
         color_discrete_sequence=THEME
         
@@ -182,8 +178,8 @@ def create_layout(app: Dash) -> html.Div:
 
 # ===========ОДДС. Сальдо от операций===========
     odds_saldo_graph = px.bar(
-        data_frame=odds_saldo,
-        y=odds_saldo.columns,
+        data_frame=odds_saldo_last_year,
+        y=odds_saldo.columns[:-1],
         barmode='group',
         color_discrete_sequence=THEME
         )
@@ -216,8 +212,8 @@ def create_layout(app: Dash) -> html.Div:
     
 # ===========ОДДС. Поступления от операций===========
     odds_rises_graph = px.pie(
-        names=odds_rises_col_names, 
-        values=odds_rises_cols, 
+        names=odds_rises_col_names[:-1], 
+        values=odds_rises_last_year, 
         hole = 0.4,
         color_discrete_sequence=THEME
         )
@@ -313,7 +309,12 @@ def create_layout(app: Dash) -> html.Div:
 
 
             html.H4('Отчет о финансовых результатах', style={'margin-top': '40px', 'margin-bottom': '25px'}),
-            dcc.Graph(id="result_analyse_graph", figure = ofr_graph),
+            dbc.Card([
+                           dcc.Graph(id="result_analyse_graph", figure = ofr_line_graph),
+                        ],
+                        style={"padding-top": "20px"}
+                        ),
+            
 
 
             html.H4('Отчет о движении денежных средств', style={'margin-top': '40px', 'margin-bottom': '25px'}),
