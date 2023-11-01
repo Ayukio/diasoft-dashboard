@@ -1,4 +1,4 @@
-from dash import Dash, dcc, html, Input, Output
+from dash import Dash, dcc, html, Input, Output, callback
 import plotly.express as px
 import pandas as pd
 import plotly.graph_objs as go
@@ -7,11 +7,10 @@ from bs4 import BeautifulSoup
 import requests
 from src.components.graphs_creator import kpi, kpi_col_names, balance_asset_structure, balance_asset_structure_col_names, balance_asset_structure_last_year, balance_passive_structure, balance_passive_structure_col_names, balance_passive_structure_last_year, ofr, odds_saldo, odds_saldo_col_names, odds_saldo_last_year, odds_rises, odds_rises_col_names, odds_rises_last_year
 
-
+THEME = px.colors.qualitative.Vivid 
 
 def create_layout(app: Dash) -> html.Div:
-    THEME = px.colors.qualitative.Bold
-
+    
 # ===========KPI КАРТОЧКИ===========
     def get_kpi_plot(label, kpi_title):
         fig1 = go.Figure(
@@ -209,6 +208,7 @@ def create_layout(app: Dash) -> html.Div:
                 size=16,
             ),
         )
+    odds_saldo_graph.update_yaxes(showline=True, linewidth=1, linecolor='white', gridcolor='#e9e9e9')
     
 # ===========ОДДС. Поступления от операций===========
     odds_rises_graph = px.pie(
@@ -233,6 +233,9 @@ def create_layout(app: Dash) -> html.Div:
             'xanchor': 'center',
             'yanchor': 'top'}
 )
+    
+
+
     
 # ===========Разметка страницы===========
 
@@ -309,8 +312,32 @@ def create_layout(app: Dash) -> html.Div:
 
 
             html.H4('Отчет о финансовых результатах', style={'margin-top': '40px', 'margin-bottom': '25px'}),
+            html.Div([
+                            html.H5(['Вид диаграммы'], style={'margin-left': '20px', 'margin-right': '20px', 'margin-top': '20px'}),
+                            dcc.RadioItems(
+                                id='radio',
+                                options=[
+                                        {'label': html.Span("Линейная", style={'font-size': 20, 'padding-left': 6}), 'value': 'Линейная'},
+                                        {'label':  html.Span("Гистограмма", style={'font-size': 20, 'padding-left': 6}), 'value': 'Гистограмма'},
+                                ],
+                                value='Линейная',
+                                style={"font-size": "20px"},
+                                labelStyle={"display": "flex", "align-items": "center"},
+                                # inline = True
+                            ),
+                        ],
+                        style={'display': 'flex',
+                               'flex-direction': 'row',
+                               'justify-content': 'left',
+                               'margin-bottom': '25px'
+                               }),
             dbc.Card([
-                           dcc.Graph(id="result_analyse_graph", figure = ofr_line_graph),
+                        #    dcc.Graph(id="result_analyse_graph", figure = ofr_line_graph),
+                        
+                        
+                        
+                        dcc.Graph(id='ofr_line_graph')
+                       
                         ],
                         style={"padding-top": "20px"}
                         ),
