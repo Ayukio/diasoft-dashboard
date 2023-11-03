@@ -58,10 +58,12 @@ balance_passive_structure_last_year = list(balance_passive_structure.iloc[[-1]].
 
 
 # ===========ОФР===========
+valov_profit_row = get_tbl_row(profit_loss_df, 'Валовая прибыль (убыток)')
+sales_profit_row = get_tbl_row(profit_loss_df, 'Прибыль (убыток) от продаж')
 ebit_row = get_tbl_row(others_profit_loss_df, 'Прибыль (убыток) до налогообложения')
 
-ofr_col_names = ['Выручка', 'Чистая прибыль', 'EBIT', 'Год']
-ofr = pd.DataFrame([income_row, clean_profit_row, ebit_row, YEARS]).T
+ofr_col_names = ['Выручка', 'Чистая прибыль', 'Прибыль до налогообложения', 'Валовая прибыль', 'Прибыль от продаж', 'Год']
+ofr = pd.DataFrame([income_row, clean_profit_row, ebit_row, valov_profit_row, sales_profit_row, YEARS]).T
 ofr.columns = ofr_col_names
 
 
@@ -89,3 +91,31 @@ odds_rises.columns = odds_rises_col_names
 odds_rises.set_index('Год')
 
 odds_rises_last_year = list(odds_rises.iloc[[-1]].values.tolist()[0][:-1])
+
+# ===========ОДДС. Процентная разница по операциям===========
+
+def get_odds_percent_df(odds_df):
+    percent_df = pd.DataFrame(columns=['Текущие операции_%', 'Инвестиционные операции_%', 'Финансовые операции_%', 'Год'])
+    for year in YEARS:
+        if year == 2019: 
+            t_perc, i_perc, f_perc = 0, 0, 0
+        else:
+            t_x = int(odds_df[odds_df['Год'] == year]['Текущие операции'].values[0])
+            t_x0 = int(odds_df[odds_df['Год'] == (year - 1)]['Текущие операции'].values[0])
+            t_perc = (t_x - t_x0) / t_x0 * 100 if t_x0 != 0 else 0
+
+            i_x = int(odds_df[odds_df['Год'] == year]['Инвестиционные операции'].values[0])
+            i_x0 = int(odds_df[odds_df['Год'] == (year - 1)]['Инвестиционные операции'].values[0])
+            i_perc = (i_x - i_x0) / i_x0 * 100 if i_x0 != 0 else 0
+
+            f_x = int(odds_df[odds_df['Год'] == year]['Финансовые операции'].values[0])
+            f_x0 = int(odds_df[odds_df['Год'] == (year - 1)]['Финансовые операции'].values[0])
+            f_perc = (f_x - f_x0) / f_x0 * 100 if f_x0 != 0 else 0
+        
+        percent_df =  pd.concat([percent_df, pd.DataFrame([{'Текущие операции_%': int(t_perc), 'Инвестиционные операции_%': int(i_perc), 'Финансовые операции_%': int(f_perc), 'Год': int(year)}])], ignore_index=True)
+    return percent_df
+
+
+odds_saldo_percent_df = get_odds_percent_df(odds_saldo)
+odds_rises_percent_df = get_odds_percent_df(odds_rises)
+

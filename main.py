@@ -5,11 +5,11 @@ from src.components.layout import create_layout
 import pandas as pd
 from bs4 import BeautifulSoup
 import requests
-from src.components.graphs_creator import ofr
+from src.components.graphs_creator import ofr, balance_asset_structure, balance_asset_structure_col_names, balance_passive_structure, balance_passive_structure_col_names, odds_rises, odds_rises_col_names, odds_saldo
 from src.components.layout import THEME
 
 
-# def main() -> None:
+# -------------------------CREATE APP--------------------------------------
 app = Dash(
         __name__,
     external_stylesheets=[BOOTSTRAP],
@@ -19,29 +19,31 @@ app.title = "Diasoft dashboard"
 app.layout = create_layout(app)
 
 
-
-
-    # ---------------------------------------------------------------
+# ------------------------------CALLBACKS---------------------------------
 @app.callback(
     Output('ofr_line_graph', 'figure'),
-    [Input(component_id='radio', component_property='value')]
+    [Input(component_id='radio', component_property='value'),
+      Input(component_id='ofr-category-selector', component_property='value')
+     ]
+   
 )
-def build_graph(value):
-    if value == 'Гистограмма':
-        return px.bar(
+def build_ofr_graph(chart_type, selected_categories):
+    if chart_type == 'Гистограмма':
+        # Create a line chart with selected categories
+        fig = px.bar(
         data_frame=ofr,
         x='Год',
-        y=ofr.columns,
+        y=selected_categories,
         barmode='group',
         color_discrete_sequence=THEME
         ).update_layout(
-            legend_title_text='Тип прибыли',
+            legend_title_text='',
             xaxis_title="Год", 
             yaxis_title="Тыс. руб.",
             plot_bgcolor='#FFFFFF',
             legend=dict(
             orientation="h",
-            entrywidth=130,
+            entrywidth=300,
             yanchor="bottom",
             y=1.02,
             xanchor="right",
@@ -49,26 +51,23 @@ def build_graph(value):
             font=dict(
                 size=16,
             ),
-        )).update_yaxes(showline=True, linewidth=1, linecolor='white', gridcolor='#e9e9e9')
-    
-    
-
+        )).update_yaxes(showline=True, linewidth=1, linecolor='#e9e9e9', gridcolor='#e9e9e9')
     else:
-        return px.line(
+        fig = px.line(
         data_frame=ofr,
         x='Год',
-        y=ofr.columns,
+        y=selected_categories,
         markers=True,
         color_discrete_sequence=THEME,
         ).update_layout(
             
             plot_bgcolor='#FFFFFF',
-            legend_title_text='Тип прибыли', 
+            legend_title_text='', 
             xaxis_title="Год", 
             yaxis_title="Тыс. руб.",
             legend=dict(
             orientation="h",
-            entrywidth=130,
+            entrywidth=300,
             yanchor="bottom",
             y=1.02,
             xanchor="right",
@@ -76,9 +75,133 @@ def build_graph(value):
             font=dict(
                 size=16,
             ),
-                )).update_traces(line=dict(width=4)).update_xaxes(showline=True, linewidth=1, linecolor='white', gridcolor='#e9e9e9').update_yaxes(showline=True, linewidth=1, linecolor='white', gridcolor='#e9e9e9')
-        
+                )).update_traces(line=dict(width=4)).update_xaxes(showline=True, linewidth=1, linecolor='#e9e9e9', gridcolor='#e9e9e9').update_yaxes(showline=True, linewidth=1, linecolor='#e9e9e9', gridcolor='#e9e9e9')
     
+    return fig
+
+        
+@app.callback(
+    [Output('asset_graph', 'figure'), Output('capital_graph', 'figure')],
+    [Input(component_id='year-balance-dropdown', component_property='value')]
+)
+def build_pie_graph(year):
+    filtered_asset_data = list(balance_asset_structure[balance_asset_structure['Год'] == year].values.tolist()[0][:-1])
+
+    asset = px.pie(
+        names=balance_asset_structure_col_names[:-1], 
+        values=filtered_asset_data, 
+        hole = 0.4,
+        color_discrete_sequence=THEME
+        ).update_layout(
+    legend_x=-1.7, 
+    legend_y=0.5,
+    autosize=False,
+    height=320,
+    width=580,
+    font=dict(
+        size=16,
+        
+    ),
+    title={
+        'text': "Актив",
+        'y':0.9,
+        'x':0.2,
+        'xanchor': 'center',
+        'yanchor': 'top'}
+    )
+
+    filtered_passive_data = list(balance_passive_structure[balance_passive_structure['Год'] == year].values.tolist()[0][:-1])
+
+    passive = px.pie(
+        names=balance_passive_structure_col_names[:-1], 
+        values=filtered_passive_data, 
+         hole = 0.4,
+        color_discrete_sequence=THEME
+        ).update_layout(
+        title={
+            'text': "Пассив",
+            'y':0.9,
+            'x':0.2,
+            'xanchor': 'center',
+            'yanchor': 'top'},
+        font=dict(
+        size=16,
+        ),
+        legend_x=-1.7, 
+        legend_y=0.5, 
+        autosize=False, 
+        height=320, 
+        width=580
+    )
+
+    return asset, passive
+
+
+@app.callback(
+    [Output('odds_saldo', 'figure'), Output('odds_postup', 'figure')],
+    [Input(component_id='year-odds-dropdown', component_property='value')]
+)
+def build_pie_graph(year):
+    filtered_saldo_data = odds_saldo[odds_saldo['Год'] == year]
+
+    saldo = px.bar(
+        data_frame=filtered_saldo_data,
+        y=odds_saldo.columns[:-1],
+        barmode='group',
+        color_discrete_sequence=THEME
+        ).update_layout(
+            xaxis={'showgrid': False,
+                   'visible': False,
+                'showticklabels': False},
+            yaxis={'showgrid': False,
+                   'visible': False,
+                'showticklabels': False},
+            plot_bgcolor='#FFFFFF',
+            margin=dict(l=0, r=0, b=0, t=15),
+            legend_x=-1.7, 
+            legend_y=0.5, 
+            autosize=False, 
+            height=320, 
+            width=580,
+            legend_title = '',
+            title={
+                'text': "Сальдо",
+                'y':0.9,
+                'x':0.2,
+                'xanchor': 'center',
+                'yanchor': 'top'},
+                font=dict(
+                size=16,
+            ),
+        ).update_yaxes(showline=True, linewidth=1, linecolor='white', gridcolor='#e9e9e9')
+    
+
+    filtered_rises_data = list(odds_rises[odds_rises['Год'] == year].values.tolist()[0][:-1])
+
+    rises = px.pie(
+        names=odds_rises_col_names[:-1], 
+        values=filtered_rises_data, 
+        hole = 0.4,
+        color_discrete_sequence=THEME
+        ).update_layout(
+        # legend_title_text=legend_title,
+        legend_x=-3, legend_y=0.5,
+        autosize=False,
+        height=320,
+        width=580,
+        font=dict(
+            size=16,
+        ),
+        title={
+            'text': "Поступления",
+            'y':0.9,
+            'x':0.25,
+            'xanchor': 'center',
+            'yanchor': 'top'}
+        )
+
+        
+    return saldo, rises
 
 
 if __name__ == "__main__":
