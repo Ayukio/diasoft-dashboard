@@ -35,6 +35,8 @@ def build_ofr_graph(chart_type, selected_categories):
         x='Год',
         y=selected_categories,
         barmode='group',
+        width=750,
+        height=620,
         color_discrete_sequence=THEME
         ).update_layout(
             legend_title_text='',
@@ -43,7 +45,7 @@ def build_ofr_graph(chart_type, selected_categories):
             plot_bgcolor='#FFFFFF',
             legend=dict(
             orientation="h",
-            entrywidth=300,
+            entrywidth=400,
             yanchor="bottom",
             y=1.02,
             xanchor="right",
@@ -58,6 +60,8 @@ def build_ofr_graph(chart_type, selected_categories):
         x='Год',
         y=selected_categories,
         markers=True,
+        width=750,
+        height=620,
         color_discrete_sequence=THEME,
         ).update_layout(
             
@@ -90,22 +94,32 @@ def build_pie_graph(year):
     asset = px.pie(
         names=balance_asset_structure_col_names[:-1], 
         values=filtered_asset_data, 
-        hole = 0.4,
+        hole = 0.7,
         color_discrete_sequence=THEME
         ).update_layout(
-    legend_x=-1.7, 
-    legend_y=0.5,
+            
+    legend=dict(
+            orientation="h",
+            entrywidth=300,
+            yanchor="bottom",
+            y=1.02,
+            xanchor="right",
+            x=1,
+            font=dict(
+                size=16,
+            ),
+                ),
     autosize=False,
-    height=320,
-    width=580,
+    height=620,
+    width=560,
     font=dict(
-        size=16,
+        size=18,
         
     ),
     title={
         'text': "Актив",
-        'y':0.9,
-        'x':0.2,
+        'y':0.96,
+        'x':0.15,
         'xanchor': 'center',
         'yanchor': 'top'}
     )
@@ -115,23 +129,34 @@ def build_pie_graph(year):
     passive = px.pie(
         names=balance_passive_structure_col_names[:-1], 
         values=filtered_passive_data, 
-         hole = 0.4,
+         hole = 0.7,
         color_discrete_sequence=THEME
         ).update_layout(
-        title={
-            'text': "Пассив",
-            'y':0.9,
-            'x':0.2,
-            'xanchor': 'center',
-            'yanchor': 'top'},
-        font=dict(
-        size=16,
-        ),
-        legend_x=-1.7, 
-        legend_y=0.5, 
-        autosize=False, 
-        height=320, 
-        width=580
+            
+    legend=dict(
+            orientation="h",
+            entrywidth=300,
+            yanchor="bottom",
+            y=1.02,
+            xanchor="right",
+            x=1,
+            font=dict(
+                size=16,
+            ),
+                ),
+    autosize=False,
+    height=620,
+    width=560,
+    font=dict(
+        size=18,
+        
+    ),
+    title={
+        'text': "Пассив",
+        'y':0.96,
+        'x':0.15,
+        'xanchor': 'center',
+        'yanchor': 'top'}
     )
 
     return asset, passive

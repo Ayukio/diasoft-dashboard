@@ -8,7 +8,7 @@ import requests
 from src.components.graphs_creator import kpi, kpi_col_names, balance_asset_structure, balance_asset_structure_col_names, balance_asset_structure_last_year, balance_passive_structure, balance_passive_structure_col_names, balance_passive_structure_last_year, ofr, odds_saldo, odds_saldo_col_names, odds_saldo_last_year, odds_rises, odds_rises_col_names, odds_rises_last_year
 from src.components.data_extractor import YEARS
 
-THEME = px.colors.qualitative.Vivid 
+THEME = px.colors.qualitative.Bold 
 
 def create_layout(app: Dash) -> html.Div:
     
@@ -31,17 +31,17 @@ def create_layout(app: Dash) -> html.Div:
                 mode='number+delta',
                 value=kpi_title['y'],
                 title={'text': label + ', ₽',
-                    'font': {'size': 20},
+                    'font': {'size': 28},
                     },
                 number={
                         'suffix': ' млрд',
-                        'font': {'size': 36},
+                        'font': {'size': 46},
                         },
                 delta={'position': 'bottom',
                     'reference': kpi_title['yo'],
                     'relative': True,
                     "valueformat": ".2%",
-                    'font': {'size': 20},
+                    'font': {'size': 30},
                     },
                 domain={'y': [0, 0.7], 'x': [0.25, 0.75]},
             ))
@@ -85,7 +85,7 @@ def create_layout(app: Dash) -> html.Div:
 
     return html.Div(
         className="app-div",
-        style = {'margin': 'auto', 'width': '1200px', 'padding-top': '30px',
+        style = {'margin': 'auto', 'width': '2100px', 'padding-top': '40px',
  
     },
         children=[
@@ -93,30 +93,37 @@ def create_layout(app: Dash) -> html.Div:
             [
                 dbc.Row(
                    [
+                        html.Img(src=app.get_asset_url('diasoft-logo.png'),
+                                 style={
+                                    'height': '130%',
+                                    'width': '19%',
+                                    # 'font-size': 36,
+                                    'padding-bottom': '50px'
+                                }),
                         dcc.Graph(id='balance-indicator',
                                   figure = fig_bal,
                                 style={
                                     'height': '95%',
-                                    'width': '23%',
+                                    'width': '19%',
                                 }),
                         dcc.Graph(id='profit-indicator',
                                   figure = fig_prof,
                                 style={
                                     'height': '95%',
-                                    'width': '23%',
+                                    'width': '19%',
 
                                 }),
                         dcc.Graph(id='revenue-indicator',
                                   figure = fig_rev,
                                 style={
                                     'height': '95%',
-                                    'width': '23%',
+                                    'width': '19%',
                                 }),
                         dcc.Graph(id='tax-indicator',
                                   figure = fig_tax,
                                 style={
                                     'height': '95%',
-                                    'width': '23%',
+                                    'width': '19%',
                                 }),
                         
                     ],
@@ -130,13 +137,76 @@ def create_layout(app: Dash) -> html.Div:
                 ),
             ],
         ),
-            html.H3('Бухгалтерский баланс', style={'margin-top': '40px', 'margin-bottom': '25px'}),
+
+        html.Div(style = {'display': 'flex',
+                        'flex-direction': 'row',
+                        'justify-content': 'space-between',}, 
+            children=[
+                html.Div(style = {}, 
+            children=[
+html.H3('Бухгалтерский баланс', style={'margin-top': '40px', 'margin-bottom': '25px'}),
+html.H3('', style={ 'margin-bottom': '40px'}),
             dcc.Dropdown(
                 options = year_options, 
                 value = 2022, 
                 id='year-balance-dropdown', 
-                style={ 'margin-bottom': '15px'}
+                style={ 'margin-bottom': '0px', 'width': '1305px', 'height': '32px', 'font-size': '18px'}
                          ),
+            ]),
+        
+        html.Div(style = {}, 
+            children=[
+html.Div([
+html.H3('Финансовые результаты', style={'margin-top': '0px', 'margin-bottom': '0px'}),
+            html.Span([
+                            # html.H5([''], style={'margin-left': '20px', 'margin-right': '0px', 'margin-top': '20px'}),
+                            dcc.RadioItems(
+                                id='radio',
+                                options=[
+                                        {'label': html.Span("Линейная", style={'font-size': 18, 'padding-left': 8, 'margin-right': 25}), 'value': 'Линейная'},
+                                        {'label':  html.Span("Гистограмма", style={'font-size': 18, 'padding-left': 8}), 'value': 'Гистограмма'},
+                                ],
+                                value='Линейная',
+
+                                style={"font-size": "20px"},
+                                labelStyle={'display': 'inline-block'},
+                                # inline = True
+                            ),
+                            
+                        ],
+                        style={'display': 'flex',
+                               'flex-direction': 'row',
+                               'justify-content': 'left',
+                            #    'margin-bottom': '15px'
+                               }),
+            ],
+            style={'display': 'flex',
+                               'flex-direction': 'row',
+                               'justify-content': 'space-between',
+                               'align-items': 'center',
+                               'margin-top': '40px',
+                               'margin-bottom': '40px'
+                               }
+            ),               
+            dcc.Dropdown(
+                                id='ofr-category-selector',
+                                options=list(ofr.columns[:-1]),
+                                value=['Выручка', 'Чистая прибыль', 'Валовая прибыль'], 
+                                multi=True,
+                                style={ 'margin-top': '10px', 'margin-bottom': '10px', 'width': '770px'}
+                            ),
+        ]),           
+            ]),
+
+            
+         
+    
+        html.Div(
+            style = {'margin': 'auto', 'width': '900', 'padding-top': '0px',
+    
+        },
+            children=[
+            
             dbc.CardBody(
                     [
                         dbc.Row([
@@ -146,7 +216,7 @@ def create_layout(app: Dash) -> html.Div:
                                 dcc.Graph(
                                     id="asset_graph", 
                                         )],
-                                    style={"padding-top": "20px"}
+                                    style={"padding-top": "0px"}
                                       ),
                         ],
                     ),
@@ -154,47 +224,35 @@ def create_layout(app: Dash) -> html.Div:
                         dbc.Card([
                            dcc.Graph(id="capital_graph", ),
                         ],
-                        style={"padding-top": "20px"}
-                        ),
-                    )])],
-                    ),
-
-
-            html.H3('Отчет о финансовых результатах', style={'margin-top': '40px', 'margin-bottom': '25px'}),
-            html.Div([
-                            html.H5([''], style={'margin-left': '20px', 'margin-right': '0px', 'margin-top': '20px'}),
-                            dcc.RadioItems(
-                                id='radio',
-                                options=[
-                                        {'label': html.Span("Линейная диаграмма", style={'font-size': 20, 'padding-left': 6}), 'value': 'Линейная'},
-                                        {'label':  html.Span("Гистограмма", style={'font-size': 20, 'padding-left': 6}), 'value': 'Гистограмма'},
-                                ],
-                                value='Линейная',
-                                style={"font-size": "20px"},
-                                labelStyle={"display": "flex", "align-items": "center"},
-                                # inline = True
-                            ),
-                            
-                        ],
-                        style={'display': 'flex',
-                               'flex-direction': 'row',
-                               'justify-content': 'left',
-                               'margin-bottom': '15px'
-                               }),
-            dcc.Dropdown(
-                                id='ofr-category-selector',
-                                options=list(ofr.columns[:-1]),
-                                value=['Выручка', 'Чистая прибыль', 'Валовая прибыль'], 
-                                multi=True,
-                                style={ 'margin-top': '15px', 'margin-bottom': '15px'}
-                            ),
+                        style={"padding-top": "0px"}
+                        )),
+                    dbc.Col(
+                        # dbc.Card([
+                          
             dbc.Card([
                       
                         dcc.Graph(id='ofr_line_graph')
                        
                         ],
-                        style={"padding-top": "20px"}
+                        
+                        style={"padding-top": "0px", 'width': '770px', }
                         ),
+                        # ],
+                        style={"padding-top": "0px", }
+                        
+                    )])],
+                    ),
+                    # html.Div(
+            # style = {'margin': 'auto', 'width': '800', 'padding-top': '0px',
+    
+        # })
+
+            ]),
+
+
+            
+                        
+            
             
 
 
