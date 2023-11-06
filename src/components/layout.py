@@ -130,7 +130,7 @@ def create_layout(app: Dash) -> html.Div:
                 ),
             ],
         ),
-            html.H4('Бухгалтерский баланс', style={'margin-top': '40px', 'margin-bottom': '25px'}),
+            html.H3('Бухгалтерский баланс', style={'margin-top': '40px', 'margin-bottom': '25px'}),
             dcc.Dropdown(
                 options = year_options, 
                 value = 2022, 
@@ -160,7 +160,7 @@ def create_layout(app: Dash) -> html.Div:
                     ),
 
 
-            html.H4('Отчет о финансовых результатах', style={'margin-top': '40px', 'margin-bottom': '25px'}),
+            html.H3('Отчет о финансовых результатах', style={'margin-top': '40px', 'margin-bottom': '25px'}),
             html.Div([
                             html.H5([''], style={'margin-left': '20px', 'margin-right': '0px', 'margin-top': '20px'}),
                             dcc.RadioItems(
@@ -198,7 +198,7 @@ def create_layout(app: Dash) -> html.Div:
             
 
 
-            html.H4('Отчет о движении денежных средств', style={'margin-top': '40px', 'margin-bottom': '25px'}),
+            html.H3('Отчет о движении денежных средств', style={'margin-top': '40px', 'margin-bottom': '25px'}),
             dcc.Dropdown(
                 options = year_options, 
                 value = 2022, 
