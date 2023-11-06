@@ -31,7 +31,7 @@ def create_layout(app: Dash) -> html.Div:
                 mode='number+delta',
                 value=kpi_title['y'],
                 title={'text': label + ', ₽',
-                    'font': {'size': 28},
+                    'font': {'size': 20},
                     },
                 number={
                         'suffix': ' млрд',
@@ -41,7 +41,7 @@ def create_layout(app: Dash) -> html.Div:
                     'reference': kpi_title['yo'],
                     'relative': True,
                     "valueformat": ".2%",
-                    'font': {'size': 30},
+                    'font': {'size': 20},
                     },
                 domain={'y': [0, 0.7], 'x': [0.25, 0.75]},
             ))
@@ -79,6 +79,41 @@ def create_layout(app: Dash) -> html.Div:
 
     for k in YEARS:
        year_options.append({'label': k, 'value': k}) 
+
+
+
+    long_df = px.data.medals_long()
+    long_df.drop(long_df.tail(3).index,
+            inplace = True)
+
+    long_df.rename(columns={'nation': 'Вид операции', 'medal': 'Вид потока', 'count': 'Сумма'}, inplace=True)
+
+    fig = px.histogram(long_df, x="Сумма",
+                    y="Вид потока", color="Вид операции",
+                    orientation='h',
+                    barnorm='percent', text_auto='.2f',
+                    # title="",
+                    color_discrete_sequence=THEME,
+                    ).update_layout(
+                plot_bgcolor='#FFFFFF',
+                margin=dict(l=0, r=0, b=0, t=15),
+                legend_title = '',
+                legend_x=-0.4, 
+                legend_y=0.5,
+                height=320,
+                title={
+                'text': "Структура операций",
+                'y':0.9,
+                'x':0.12,
+                'xanchor': 'center',
+                'yanchor': 'top'},
+                font=dict(
+                size=16,
+            ),
+            
+        
+    )
+
 
     
 # ===========Разметка страницы===========
@@ -267,13 +302,23 @@ html.H3('Финансовые результаты', style={'margin-top': '0px',
                 dbc.Col([
                     dbc.Card([
                         dcc.Graph(id="odds_saldo"),
-                    ]),
+                    ], 
+                    style={
+                        # 'width': '580px'
+                    }
+                    ),
                 ]),
+                # dbc.Col([
+                #     dbc.Card([
+                #         dcc.Graph(id="odds_postup"),
+                #     ])
+                # ]),
                 dbc.Col([
                     dbc.Card([
-                        dcc.Graph(id="odds_postup"),
-                    ])
-                ])
+                        dcc.Graph(id="fig", figure=fig),
+                    ]),
+                ]),
+
             ]),
             html.H4('', style={'margin-top': '40px', 'margin-bottom': '25px'}),
             

@@ -39,6 +39,7 @@ def build_ofr_graph(chart_type, selected_categories):
         height=620,
         color_discrete_sequence=THEME
         ).update_layout(
+             bargroupgap=0.1,
             legend_title_text='',
             xaxis_title="Год", 
             yaxis_title="Тыс. руб.",
@@ -106,7 +107,7 @@ def build_pie_graph(year):
             xanchor="right",
             x=1,
             font=dict(
-                size=16,
+                size=18,
             ),
                 ),
     autosize=False,
@@ -141,7 +142,7 @@ def build_pie_graph(year):
             xanchor="right",
             x=1,
             font=dict(
-                size=16,
+                size=18,
             ),
                 ),
     autosize=False,
@@ -163,7 +164,8 @@ def build_pie_graph(year):
 
 
 @app.callback(
-    [Output('odds_saldo', 'figure'), Output('odds_postup', 'figure')],
+    # [Output('odds_saldo', 'figure'), Output('odds_postup', 'figure')],
+     Output('odds_saldo', 'figure'),
     [Input(component_id='year-odds-dropdown', component_property='value')]
 )
 def build_pie_graph(year):
@@ -175,6 +177,7 @@ def build_pie_graph(year):
         barmode='group',
         color_discrete_sequence=THEME
         ).update_layout(
+            bargroupgap=0.2,
             xaxis={'showgrid': False,
                    'visible': False,
                 'showticklabels': False},
@@ -183,7 +186,7 @@ def build_pie_graph(year):
                 'showticklabels': False},
             plot_bgcolor='#FFFFFF',
             margin=dict(l=0, r=0, b=0, t=15),
-            legend_x=-1.7, 
+            legend_x=-1, 
             legend_y=0.5, 
             autosize=False, 
             height=320, 
@@ -226,7 +229,8 @@ def build_pie_graph(year):
         )
 
         
-    return saldo, rises
+    # return saldo, rises
+    return saldo
 
 
 if __name__ == "__main__":
