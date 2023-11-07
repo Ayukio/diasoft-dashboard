@@ -6,7 +6,7 @@ import pandas as pd
 from bs4 import BeautifulSoup
 import requests
 from src.components.graphs_creator import ofr, balance_asset_structure, balance_asset_structure_col_names, balance_passive_structure, balance_passive_structure_col_names, odds_rises, odds_rises_col_names, odds_saldo
-from src.components.layout import THEME
+from src.components.layout import THEME, OFR_THEME
 
 
 # -------------------------CREATE APP--------------------------------------
@@ -37,7 +37,7 @@ def build_ofr_graph(chart_type, selected_categories):
         barmode='group',
         width=750,
         height=620,
-        color_discrete_sequence=THEME
+        color_discrete_sequence=OFR_THEME
         ).update_layout(
              bargroupgap=0.1,
             legend_title_text='',
@@ -63,7 +63,7 @@ def build_ofr_graph(chart_type, selected_categories):
         markers=True,
         width=750,
         height=620,
-        color_discrete_sequence=THEME,
+        color_discrete_sequence=OFR_THEME,
         ).update_layout(
             
             plot_bgcolor='#FFFFFF',

@@ -8,7 +8,13 @@ import requests
 from src.components.graphs_creator import kpi, kpi_col_names, balance_asset_structure, balance_asset_structure_col_names, balance_asset_structure_last_year, balance_passive_structure, balance_passive_structure_col_names, balance_passive_structure_last_year, ofr, odds_saldo, odds_saldo_col_names, odds_saldo_last_year, odds_rises, odds_rises_col_names, odds_rises_last_year
 from src.components.data_extractor import YEARS
 
-THEME = px.colors.qualitative.Bold 
+# THEME = px.colors.qualitative.Antique 
+# THEME = px.colors.qualitative.Vivid_r 
+# THEME = px.colors.qualitative.T10_r 
+
+# THEME = [ '#46039f',  '#9c179e',  '#d8576b', '#fb9f3a', '#fdca26', '#f0f921']
+THEME = [ '#2A2F4F',  '#E5BEEC',  '#917FB3', '#fb9f3a', '#fdca26', '#f0f921']
+OFR_THEME = [ '#2A2F4F',  '#fb9f3a',  '#917FB3',  '#B3E5BE', '#D8576B']
 
 def create_layout(app: Dash) -> html.Div:
     
@@ -64,10 +70,10 @@ def create_layout(app: Dash) -> html.Div:
     rev = kpi.loc[:, kpi_col_names[2]].values
     tax = kpi.loc[:, kpi_col_names[3]].values
 
-    kpis = {'Баланс': {'values': bal, 'y': float(f'{bal[-1]/(1000000):.3f}') , 'yo': float(f'{bal[-2]/(1000000):.3f}') , 'color': '#E2EFED'},
-        'Прибыль': {'values': prof, 'y': float(f'{prof[-1]/(1000000):.3f}') , 'yo': float(f'{prof[-2]/(1000000):.3f}') , 'color': '#E5E4E2'}, 
-        'Выручка': {'values': rev, 'y': float(f'{rev[-1]/(1000000):.3f}') , 'yo': float(f'{rev[-2]/(1000000):.3f}') , 'color': '#E6E6F8'}, 
-        'Капитал': {'values': tax, 'y': float(f'{tax[-1]/(1000000):.3f}') , 'yo': float(f'{tax[-2]/(1000000):.3f}') , 'color': '#E0EAF5'}}
+    kpis = {'Баланс': {'values': bal, 'y': float(f'{bal[-1]/(1000000):.3f}') , 'yo': float(f'{bal[-2]/(1000000):.3f}') , 'color': '#ffe8ce'},
+        'Прибыль': {'values': prof, 'y': float(f'{prof[-1]/(1000000):.3f}') , 'yo': float(f'{prof[-2]/(1000000):.3f}') , 'color': '#ffe8ce'}, 
+        'Выручка': {'values': rev, 'y': float(f'{rev[-1]/(1000000):.3f}') , 'yo': float(f'{rev[-2]/(1000000):.3f}') , 'color': '#ffe8ce'}, 
+        'Капитал': {'values': tax, 'y': float(f'{tax[-1]/(1000000):.3f}') , 'yo': float(f'{tax[-2]/(1000000):.3f}') , 'color': '#ffe8ce'}}
     
     for _, (k, v) in enumerate(kpis.items()):
         if k == 'Баланс': fig_bal = get_kpi_plot(k, v) 
@@ -139,26 +145,26 @@ def create_layout(app: Dash) -> html.Div:
                                   figure = fig_bal,
                                 style={
                                     'height': '95%',
-                                    'width': '19%',
+                                    'width': '17%',
                                 }),
                         dcc.Graph(id='profit-indicator',
                                   figure = fig_prof,
                                 style={
                                     'height': '95%',
-                                    'width': '19%',
+                                    'width': '17%',
 
                                 }),
                         dcc.Graph(id='revenue-indicator',
                                   figure = fig_rev,
                                 style={
                                     'height': '95%',
-                                    'width': '19%',
+                                    'width': '17%',
                                 }),
                         dcc.Graph(id='tax-indicator',
                                   figure = fig_tax,
                                 style={
                                     'height': '95%',
-                                    'width': '19%',
+                                    'width': '17%',
                                 }),
                         
                     ],
@@ -291,7 +297,7 @@ html.H3('Финансовые результаты', style={'margin-top': '0px',
             
 
 
-            html.H3('Отчет о движении денежных средств', style={'margin-top': '40px', 'margin-bottom': '25px'}),
+            html.H3('Отчет о движении денежных средств', style={'margin-top': '40px', 'margin-bottom': '40px'}),
             dcc.Dropdown(
                 options = year_options, 
                 value = 2022, 
@@ -304,7 +310,7 @@ html.H3('Финансовые результаты', style={'margin-top': '0px',
                         dcc.Graph(id="odds_saldo"),
                     ], 
                     style={
-                        # 'width': '580px'
+                        'width': '630px'
                     }
                     ),
                 ]),
@@ -316,7 +322,20 @@ html.H3('Финансовые результаты', style={'margin-top': '0px',
                 dbc.Col([
                     dbc.Card([
                         dcc.Graph(id="fig", figure=fig),
-                    ]),
+                    ], 
+                    style={
+                        'width': '1445px'
+                    }
+                    ),
+                ]),
+                dbc.Col([
+                    html.Div([
+                        # dcc.Graph(id="fig", figure=fig),
+                    ], 
+                    style={
+                        'width': '1px'
+                    }
+                    ),
                 ]),
 
             ]),
