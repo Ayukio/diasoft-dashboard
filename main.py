@@ -5,7 +5,7 @@ from src.components.layout import create_layout
 import pandas as pd
 from bs4 import BeautifulSoup
 import requests
-from src.components.graphs_creator import ofr, balance_asset_structure, balance_asset_structure_col_names, balance_passive_structure, balance_passive_structure_col_names, odds_rises, odds_rises_col_names, odds_saldo
+from src.components.graphs_creator import ofr, balance_asset_structure, balance_asset_structure_col_names, balance_passive_structure, balance_passive_structure_col_names, odds_rises, odds_rises_col_names, odds_saldo, flow_structure_19, flow_structure_20, flow_structure_21, flow_structure_22
 from src.components.layout import THEME, OFR_THEME
 
 
@@ -164,8 +164,8 @@ def build_pie_graph(year):
 
 
 @app.callback(
-    # [Output('odds_saldo', 'figure'), Output('odds_postup', 'figure')],
-     Output('odds_saldo', 'figure'),
+    [Output('odds_saldo', 'figure'), Output('odds_flow_structure', 'figure')],
+    #  Output('odds_saldo', 'figure'),
     [Input(component_id='year-odds-dropdown', component_property='value')]
 )
 def build_pie_graph(year):
@@ -204,33 +204,38 @@ def build_pie_graph(year):
         ).update_yaxes(showline=True, linewidth=1, linecolor='white', gridcolor='#e9e9e9')
     
 
-    filtered_rises_data = list(odds_rises[odds_rises['Год'] == year].values.tolist()[0][:-1])
+    if year == 2019: flow = flow_structure_19
+    if year == 2020: flow = flow_structure_20
+    if year == 2021: flow = flow_structure_21
+    if year == 2022: flow = flow_structure_22
 
-    rises = px.pie(
-        names=odds_rises_col_names[:-1], 
-        values=filtered_rises_data, 
-        hole = 0.4,
-        color_discrete_sequence=THEME
-        ).update_layout(
-        # legend_title_text=legend_title,
-        legend_x=-3, legend_y=0.5,
-        autosize=False,
-        height=320,
-        width=580,
-        font=dict(
-            size=16,
-        ),
-        title={
-            'text': "Поступления",
-            'y':0.9,
-            'x':0.25,
-            'xanchor': 'center',
-            'yanchor': 'top'}
-        )
+    flow_structure = px.histogram(flow, x="Сумма",
+                    y="Вид денежного потока", color="Вид операции",
+                    orientation='h',
+                    barnorm='percent', text_auto='.0f',
+                    # title="",
+                    color_discrete_sequence=THEME,
+                    ).update_layout(
+                        yaxis_title="",
+                        xaxis_title="",
+                plot_bgcolor='#FFFFFF',
+                margin=dict(l=0, r=0, b=0, t=15),
+                legend_title = '',
+                legend_x=-0.4, 
+                legend_y=0.5,
+                height=320,
+                title={
+                'text': "Структура операций",
+                'y':0.9,
+                'x':0.12,
+                'xanchor': 'center',
+                'yanchor': 'top'},
+                font=dict(
+                size=16,
+            ),
+    ).for_each_trace(lambda t: t.update(texttemplate = t.texttemplate + '%')).update_yaxes(ticksuffix = '   ')
 
-        
-    # return saldo, rises
-    return saldo
+    return saldo, flow_structure
 
 
 if __name__ == "__main__":

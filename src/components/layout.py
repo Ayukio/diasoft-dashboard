@@ -5,7 +5,7 @@ import plotly.graph_objs as go
 import dash_bootstrap_components as dbc
 from bs4 import BeautifulSoup
 import requests
-from src.components.graphs_creator import kpi, kpi_col_names, balance_asset_structure, balance_asset_structure_col_names, balance_asset_structure_last_year, balance_passive_structure, balance_passive_structure_col_names, balance_passive_structure_last_year, ofr, odds_saldo, odds_saldo_col_names, odds_saldo_last_year, odds_rises, odds_rises_col_names, odds_rises_last_year
+from src.components.graphs_creator import kpi, kpi_col_names, flow_structure_19, balance_asset_structure_col_names, balance_asset_structure_last_year, balance_passive_structure, balance_passive_structure_col_names, balance_passive_structure_last_year, ofr, odds_saldo, odds_saldo_col_names, odds_saldo_last_year, odds_rises, odds_rises_col_names, odds_rises_last_year
 from src.components.data_extractor import YEARS
 
 # THEME = px.colors.qualitative.Antique 
@@ -88,19 +88,17 @@ def create_layout(app: Dash) -> html.Div:
 
 
 
-    long_df = px.data.medals_long()
-    long_df.drop(long_df.tail(3).index,
-            inplace = True)
+    
 
-    long_df.rename(columns={'nation': 'Вид операции', 'medal': 'Вид потока', 'count': 'Сумма'}, inplace=True)
-
-    fig = px.histogram(long_df, x="Сумма",
-                    y="Вид потока", color="Вид операции",
+    fig = px.histogram(flow_structure_19, x="Сумма",
+                    y="Вид денежного потока", color="Вид операции",
                     orientation='h',
-                    barnorm='percent', text_auto='.2f',
+                    barnorm='percent', text_auto='.0f',
                     # title="",
                     color_discrete_sequence=THEME,
                     ).update_layout(
+                        yaxis_title="",
+                        xaxis_title="",
                 plot_bgcolor='#FFFFFF',
                 margin=dict(l=0, r=0, b=0, t=15),
                 legend_title = '',
@@ -118,7 +116,7 @@ def create_layout(app: Dash) -> html.Div:
             ),
             
         
-    )
+    ).for_each_trace(lambda t: t.update(texttemplate = t.texttemplate + '%')).update_yaxes(ticksuffix = '   ')
 
 
     
@@ -321,7 +319,7 @@ html.H3('Финансовые результаты', style={'margin-top': '0px',
                 # ]),
                 dbc.Col([
                     dbc.Card([
-                        dcc.Graph(id="fig", figure=fig),
+                        dcc.Graph(id="odds_flow_structure"),
                     ], 
                     style={
                         'width': '1445px'
