@@ -71,14 +71,14 @@ def create_layout(app: Dash) -> html.Div:
     tax = kpi.loc[:, kpi_col_names[3]].values
 
     kpis = {'Баланс': {'values': bal, 'y': float(f'{bal[-1]/(1000000):.3f}') , 'yo': float(f'{bal[-2]/(1000000):.3f}') , 'color': '#ffe8ce'},
-        'Прибыль': {'values': prof, 'y': float(f'{prof[-1]/(1000000):.3f}') , 'yo': float(f'{prof[-2]/(1000000):.3f}') , 'color': '#ffe8ce'}, 
-        'Выручка': {'values': rev, 'y': float(f'{rev[-1]/(1000000):.3f}') , 'yo': float(f'{rev[-2]/(1000000):.3f}') , 'color': '#ffe8ce'}, 
+        'Выручка': {'values': prof, 'y': float(f'{prof[-1]/(1000000):.3f}') , 'yo': float(f'{prof[-2]/(1000000):.3f}') , 'color': '#ffe8ce'}, 
+        'Прибыль': {'values': rev, 'y': float(f'{rev[-1]/(1000000):.3f}') , 'yo': float(f'{rev[-2]/(1000000):.3f}') , 'color': '#ffe8ce'}, 
         'Капитал': {'values': tax, 'y': float(f'{tax[-1]/(1000000):.3f}') , 'yo': float(f'{tax[-2]/(1000000):.3f}') , 'color': '#ffe8ce'}}
     
     for _, (k, v) in enumerate(kpis.items()):
         if k == 'Баланс': fig_bal = get_kpi_plot(k, v) 
-        if k == 'Прибыль': fig_prof = get_kpi_plot(k, v)
-        if k == 'Выручка': fig_rev = get_kpi_plot(k, v)
+        if k == 'Выручка': fig_prof = get_kpi_plot(k, v)
+        if k == 'Прибыль': fig_rev = get_kpi_plot(k, v)
         if k == 'Капитал': fig_tax = get_kpi_plot(k, v)
 
     year_options = []
